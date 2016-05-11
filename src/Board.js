@@ -8,9 +8,9 @@
 
     initialize: function (params) {
       if (_.isUndefined(params) || _.isNull(params)) {
-        console.log('Good guess! But to use the Board() constructor, you must pass it an argument in one of the following formats:');
-        console.log('\t1. An object. To create an empty board of size n:\n\t\t{n: %c<num>%c} - Where %c<num> %cis the dimension of the (empty) board you wish to instantiate\n\t\t%cEXAMPLE: var board = new Board({n:5})', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: grey;');
-        console.log('\t2. An array of arrays (a matrix). To create a populated board of size n:\n\t\t[ [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...] ] - Where each %c<val>%c is whatever value you want at that location on the board\n\t\t%cEXAMPLE: var board = new Board([[1,0,0],[0,1,0],[0,0,1]])', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: grey;');
+        // console.log('Good guess! But to use the Board() constructor, you must pass it an argument in one of the following formats:');
+        // console.log('\t1. An object. To create an empty board of size n:\n\t\t{n: %c<num>%c} - Where %c<num> %cis the dimension of the (empty) board you wish to instantiate\n\t\t%cEXAMPLE: var board = new Board({n:5})', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: grey;');
+        // console.log('\t2. An array of arrays (a matrix). To create a populated board of size n:\n\t\t[ [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...], [%c<val>%c,%c<val>%c,%c<val>%c...] ] - Where each %c<val>%c is whatever value you want at that location on the board\n\t\t%cEXAMPLE: var board = new Board([[1,0,0],[0,1,0],[0,0,1]])', 'color: blue;', 'color: black;','color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: blue;', 'color: black;', 'color: grey;');
       } else if (params.hasOwnProperty('n')) {
         this.set(makeEmptyMatrix(this.get('n')));
       } else {
@@ -79,12 +79,29 @@
     //
     // test if a specific row on this board contains a conflict
     hasRowConflictAt: function(rowIndex) {
-      return false; // fixme
+      // save the rows in a variable
+      var arrayOfRows = this.rows();
+      // reduce the row array at that index to the sum of its values
+      var rowSum = _.reduce(arrayOfRows[rowIndex], function(sum, aBinary){
+          return sum + aBinary;
+        }, 0);
+      // if the sum is greater than 1, we have a conflict (return true)
+      return rowSum > 1 ? true : false;
     },
 
     // test if any rows on this board contain conflicts
     hasAnyRowConflicts: function() {
-      return false; // fixme
+      // save the rows in a variable
+      var arrayOfRows = this.rows();
+      // loop through each row array, passing each index into hasRowConflictAt
+      for (var i = 0; i < arrayOfRows.length; i++) {
+        // if we ever find a conflict in a row, just stop and return true
+        if (this.hasRowConflictAt(i)) {
+          return true;
+        }
+      }
+      // if you get through and didn't find any conflicts, return false
+      return false;
     },
 
 
@@ -94,12 +111,32 @@
     //
     // test if a specific column on this board contains a conflict
     hasColConflictAt: function(colIndex) {
-      return false; // fixme
+      // save the rows in a variable
+      var arrayOfRows = this.rows();
+      // create a variable to keep the sum of the items at that column index
+      var rowSum = 0;
+      // loop through each row array
+      for (var i = 0; i < arrayOfRows.length; i++) {
+         // add the value at the column index in each row to the sum variable
+         rowSum += arrayOfRows[i][colIndex];
+      }
+      // if the sum is greater than 1, we have a conflict (return true)
+      return rowSum > 1 ? true : false;
     },
 
     // test if any columns on this board contain conflicts
     hasAnyColConflicts: function() {
-      return false; // fixme
+      // save the rows in a variable
+      var arrayOfRows = this.rows();
+      // pass each column index into hasColConflictAt. Since the board is a square, the number of column indices is conveniently the same as the number of row indices, so we can just loop for the length of arrayOfRows
+      for (var i = 0; i < arrayOfRows.length; i++) {
+        // if we ever find a conflict in a column, just stop and return true
+        if (this.hasColConflictAt(i)) {
+          return true;
+        }
+      }
+      // if you get through and didn't find any conflicts, return false
+      return false;
     },
 
 
@@ -109,12 +146,50 @@
     //
     // test if a specific major diagonal on this board contains a conflict
     hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      // save the rows in a variable
+      var arrayOfRows = this.rows();
+      // create a variable to keep the sum of the items at that diagonal index
+      var maxDiagSum = 0;
+      // create a variable which we'll increment each round to keep track of which column index to check within each row
+      var diagIndex = majorDiagonalColumnIndexAtFirstRow;
+      // loop through each row array
+      for (var i = 0; i < arrayOfRows.length; i++) {
+        console.log('diagIndex: ', diagIndex);
+        
+        // if the diag index is still less than zero (there is no actual item at that index)
+        if (diagIndex < 0) {
+          // just increment the diag index and loop again
+          diagIndex++;
+        }
+        // if the diag index is greater than zero but still less than the length of the row
+        else if (diagIndex < arrayOfRows.length - 1) {
+          // add the value at the diag index in each row to the sum variable, then increment the diag index for the next loop
+          maxDiagSum += arrayOfRows[i][diagIndex++];
+        }
+        // if the diag index gets greater than the highest column index, stop looping, we've reached the end of the diagonal
+        else {
+          break;
+        }
+      }
+      // if the sum is greater than 1, we have a conflict (return true)
+      return maxDiagSum > 1 ? true : false;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      // save the rows in a variable
+      var arrayOfRows = this.rows();
+      // the number of diagonal indices in a square board
+      var numOfDiagIndices = (arrayOfRows.length * 2) - 1;
+      // pass each diagonal index into hasMinorDiagonalConflictAt.
+      for (var i = 0; i < numOfDiagIndices.length; i++) {
+        // if we ever find a conflict in a column, just stop and return true
+        if (this.hasMajorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      // if you get through and didn't find any conflicts, return false
+      return false;
     },
 
 
@@ -124,12 +199,50 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      // save the rows in a variable
+      var arrayOfRows = this.rows();
+      // create a variable to keep the sum of the items at that diagonal index
+      var minDiagSum = 0;
+      // create a variable which we'll decrement each round to keep track of which column index to check within each row
+      var diagIndex = minorDiagonalColumnIndexAtFirstRow;
+      // loop through each row array
+      for (var i = 0; i < arrayOfRows.length; i++) {
+        console.log('diagIndex: ', diagIndex);
+        
+        // if the diag index is still higher than the greatest column index (there is no actual item at that index)
+        if (diagIndex > arrayOfRows.length - 1) {
+          // just decrement the diag index and loop again
+          diagIndex--;
+        }
+        // if the diag index is less than the length of the row but still zero or higher
+        else if (diagIndex >= 0) {
+          // add the value at the diag index in each row to the sum variable, then decrement the diag index for the next loop
+          minDiagSum += arrayOfRows[i][diagIndex--];
+        }
+        // if the diag index gets lower than zero, stop looping, we've reached the end of the diagonal
+        else {
+          break;
+        }
+      }
+      // if the sum is greater than 1, we have a conflict (return true)
+      return minDiagSum > 1 ? true : false;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      // save the rows in a variable
+      var arrayOfRows = this.rows();
+      // the number of diagonal indices in a square board
+      var numOfDiagIndices = (arrayOfRows.length * 2) - 1;
+      // pass each diagonal index into hasMinorDiagonalConflictAt.
+      for (var i = 0; i < numOfDiagIndices.length; i++) {
+        // if we ever find a conflict in a column, just stop and return true
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      // if you get through and didn't find any conflicts, return false
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
