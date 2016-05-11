@@ -154,8 +154,6 @@
       var diagIndex = majorDiagonalColumnIndexAtFirstRow;
       // loop through each row array
       for (var i = 0; i < arrayOfRows.length; i++) {
-        console.log('diagIndex: ', diagIndex);
-        
         // if the diag index is still less than zero (there is no actual item at that index)
         if (diagIndex < 0) {
           // just increment the diag index and loop again
@@ -180,9 +178,8 @@
       // save the rows in a variable
       var arrayOfRows = this.rows();
       // the number of diagonal indices in a square board
-      var numOfDiagIndices = (arrayOfRows.length * 2) - 1;
-      // pass each diagonal index into hasMinorDiagonalConflictAt.
-      for (var i = 0; i < numOfDiagIndices.length; i++) {
+      // pass each diagonal index into hasMinorDiagonalConflictAt. Since we're checking the major diagonals, the diagonal indices will be the length of the row array on either size of zero (since the hard rows to check would extend into negative indices)
+      for (var i = 1 - arrayOfRows.length; i < arrayOfRows.length; i++) {
         // if we ever find a conflict in a column, just stop and return true
         if (this.hasMajorDiagonalConflictAt(i)) {
           return true;
@@ -207,8 +204,6 @@
       var diagIndex = minorDiagonalColumnIndexAtFirstRow;
       // loop through each row array
       for (var i = 0; i < arrayOfRows.length; i++) {
-        console.log('diagIndex: ', diagIndex);
-        
         // if the diag index is still higher than the greatest column index (there is no actual item at that index)
         if (diagIndex > arrayOfRows.length - 1) {
           // just decrement the diag index and loop again
@@ -230,12 +225,13 @@
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
+      
       // save the rows in a variable
       var arrayOfRows = this.rows();
-      // the number of diagonal indices in a square board
+      // the number of diagonal indices in a square board. Since we're checking minor, the diagonal indices will be the length of the array on either side of the highest index, or just zero through one less than twice the length.
       var numOfDiagIndices = (arrayOfRows.length * 2) - 1;
       // pass each diagonal index into hasMinorDiagonalConflictAt.
-      for (var i = 0; i < numOfDiagIndices.length; i++) {
+      for (var i = 0; i < numOfDiagIndices; i++) {
         // if we ever find a conflict in a column, just stop and return true
         if (this.hasMinorDiagonalConflictAt(i)) {
           return true;
