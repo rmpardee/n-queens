@@ -80,8 +80,51 @@ window.findNQueensSolution = function(n) {
   for (var z = 0; z < n; z++) {
     indices.push(z);
   }
+  // indices = [3,1,2,0];
   // shuffle that index array
-  indices = _.shuffle(indices);
+  // if (indices.length <= 1) {
+  //   while (indices[0] === 0) {
+  //     indices = _.shuffle(indices);
+  //   }
+  // }
+  // subroutine making the first index not zero
+  var shuffleWithoutLeadZero = function(array) {
+    var halfLength = Math.floor(array.length / 2);
+    var middleValue = array[halfLength];
+    array[halfLength] = 0;
+    array[0] = middleValue;
+
+    if(array.length > 5) {
+      var nextMidValue = array[halfLength + 1];
+      array[halfLength + 1] = 1;
+      array[1] = nextMidValue;
+    }
+
+    if(array.length > 8) {
+      var nextNextMidValue = array[halfLength + 2];
+      array[halfLength + 2] = 2;
+      array[2] = nexNextMidValue;
+    }
+    // array = _.shuffle(array);
+    // base case
+    if (array[0] !== 0 && array[0] !== array.length - 1 /*&& array[1] !== 0*/ /*&& array[1] !== array.length - 1*/) {
+      return array;
+    // recursive case
+    } else {
+      return shuffleWithoutLeadZero(array);
+    }
+  };
+
+  console.log('indices before initial shuffle: ', indices);
+  
+
+  if (indices.length > 1) {
+    indices = shuffleWithoutLeadZero(indices);
+  }
+
+  console.log('indices post initial shuffle: ', indices);
+
+  
   // *carefully* shuffle the array into an order that should work
   var shuffledIndices = [];
 
@@ -118,37 +161,61 @@ window.findNQueensSolution = function(n) {
   // NOTE: need to address if no further indices will work
 
   // loop through the indices array
-  // for (var i = 0; i < indices.length; i++) {
-
+  for (var i = 0; i < n; i++) {
+    
+    console.log('outer index of indices array were checking: ', i);
   
     // loop through the remaining items in the indices array until you find a safe one to use
     for (var j = 0; j < indices.length; j++) {
+      console.log('inner index of indices array were checking: ', j);
+      console.log('indices array at beginning of loop: ', indices);
+      
       // get the index
       var hopefulNextIndex = indices[j];
+      console.log('hopefulNextIndex: ', hopefulNextIndex);
+      
       // check if it works
       var indexIsSafe = true;
+        var howManyRowsBack = 1;
       // loop through the previous indices you've already chose and make sure this index will work with them
-      for (var k = 0; k < shuffledIndices.length; k++) {
-        if (hopefulNextIndex === shuffledIndices[k] + (k+1) || hopefulNextIndex === shuffledIndices[k] - (k+1)) {
+      for (var k = shuffledIndices.length - 1; k >= 0 ; k--) {
+        console.log('shuffled index were checking: (value)', shuffledIndices[k]);
+        console.log('how many rows back: ', howManyRowsBack);
+        
+        
+        if (hopefulNextIndex === shuffledIndices[k] + howManyRowsBack || hopefulNextIndex === shuffledIndices[k] - howManyRowsBack) {
           indexIsSafe = false;
+          console.log('breaking at previous index issue: ', k);
+          
           break;
+        } else {
+          howManyRowsBack++;
         }
         // if it's not false, it will keep checking back and back through the existing indices
-      };
+      }
+        console.log('indexIsSafe: ', indexIsSafe);
       // if it is safe
       if (indexIsSafe) {
         // push it into the new shuffled array
         shuffledIndices.push(hopefulNextIndex);
         // remove that index from the indices array
-        indices.splice(hopefulNextIndex, 1);
-        // stop the loop from running
+        indices.splice(j, 1);
+        // stop the loop from 
+        console.log('indices post splice: ', indices);
+        
         break;
+      } else {
+        console.log('not safe: ' );
+        
       }
       // if it is not safe, it will keep looping through to the next indice
     };
     // NOTE: need to address if no further indices will work
-
-
+    console.log('shuffledIndices: ', shuffledIndices);
+    
+}
+    // reverse the shuffled array (since we will be using it backwards)
+    shuffledIndices.reverse();
     // use the shuffled indices array as your template to build up each row, and push it to the solutions array
     // loop n times
     for (var m = 0; m < n; m++) {
