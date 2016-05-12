@@ -109,72 +109,45 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  // cover the zero and one cases
+  // cover the zero case
   if (n === 0) {
-    return [[0]];
-  } else if (n === 1) {
-    return [[1]];
-  }
-  // NEED TO RESOLVE 2 + 3 CASES (and uncomment out tests)
-
-
-  // console.log("checking n: ", n);
-  // console.log("all perms: ", allArrayPermuations(n));
-
+    return [];
+  } 
   // create all the possible indices array options
   var allOptions = allArrayPermuations(n);
 
   // loop through each permutation
   for (var i = 0; i < allOptions.length; i++) {
-    // console.log("allOptions[i]: ", allOptions[i]);
     // build a board for each permutation
     var indicesBoard = new Board({'indicesArray': allOptions[i], 'n': n});
-    // console.log("board: ", indicesBoard.rows());
-    // console.log("whether indicesBoard has any queen conflicts: ", indicesBoard.hasAnyQueensConflicts());
     // check if there are any queen conflicts
     var goodToGo = !indicesBoard.hasAnyQueensConflicts();
     if (goodToGo) {
-      // console.log("indicesBoard: ", indicesBoard.rows());
       return indicesBoard.rows();
     }
   }
   // if it never finds one, return an empty matrix of n size
-  return [[0]];
+  return makeEmptyMatrix(n);
 };
 
 
 // return the number of nxn chessboards that exist, with n queens placed such that none of them can attack each other
 window.countNQueensSolutions = function(n) {
+  // start the solution count at zero
   var solutionCount = 0;
-
-  // covering cases to get through tests
-  if (n === 0 || n === 1) {
-    return 1;
-  } else if (n === 2 || n === 3) {
-    return 0;
-  }
-  // } else if (n === 4) {
-  //   return 2;
-  // }
-
-
-  // console.log("checking n: ", n);
-  // console.log("all perms: ", allArrayPermuations(n));
 
   // create all the possible indices array options
   var allOptions = allArrayPermuations(n);
 
   // loop through each permutation
   for (var i = 0; i < allOptions.length; i++) {
-    // console.log("allOptions[i]: ", allOptions[i]);
     // build a board for each permutation
     var indicesBoard = new Board({'indicesArray': allOptions[i], 'n': n});
-    // console.log("board: ", indicesBoard.rows());
-    // console.log("whether indicesBoard has any queen conflicts: ", indicesBoard.hasAnyQueensConflicts());
     // check if there are any queen conflicts
     var goodToGo = !indicesBoard.hasAnyQueensConflicts();
+    // if there aren't any conflicts
     if (goodToGo) {
-      // console.log("found a solution!: ", indicesBoard.rows());
+      // increment the solution counter
       solutionCount++;
     }
   }
