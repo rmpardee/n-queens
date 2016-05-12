@@ -164,12 +164,6 @@
         // if the diag index is greater than zero but still less than the length of the row
         else if (diagIndex < arrayOfRows.length) {
           // add the value at the diag index in each row to the sum variable, then increment the diag index for the next loop
-          // console.log('which row were on:, ', arrayOfRows[i]);
-          // console.log('diagIndex:, ', diagIndex);
-          // console.log('value at that index:, ', arrayOfRows[i][diagIndex]);
-          
-          
-          
           majDiagSum += arrayOfRows[i][diagIndex++];
         }
         // if the diag index gets greater than the highest column index, stop looping, we've reached the end of the diagonal
@@ -266,3 +260,32 @@ var makeEmptyMatrix = function(n) {
   });
   return board;
 };
+
+// must create a global variable so that I can access it in both the Board constructor and the solvers
+// given an array of indices, build me a board with each index as a 1 for each row, and zeroes everywhere else
+var createABoard = function(indicesArray) {
+  var board = [];
+  // save the original length of the array to use in our loops
+  var n = indicesArray.length;
+  // cover the zero and one cases
+  if (n === 0) {
+    return [[0]];
+  } else if (n === 1) {
+    return [[1]];
+  }
+  for (var i = 0; i < n; i++) {
+    // each loop start with an empty row array
+    var rowArray = [];
+    // each loop, shift the first one off from the index array
+    var indexToPlacePiece = indicesArray.shift();
+    // loop n times, pushing a 0 at each position, except a 1 at the popped off index
+    for (var j = 0; j < n; j++) {
+      (j === indexToPlacePiece) ? rowArray.push(1) : rowArray.push(0);
+    };
+    // push the row array we've built into the solution array
+    board.push(rowArray);
+  }
+  // return the solution array
+  // console.log("board inside create fn: ", board);
+  return board;
+}

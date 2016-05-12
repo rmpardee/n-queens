@@ -10,44 +10,13 @@
 // (There are also optimizations that will allow you to skip a lot of the dead search space)
 // take a look at solversSpec.js to see what the tests are expecting
 
-// must create a global variable so that I can access it in the Board constructor
-// given an array of indices, build me a board with each index as a 1 for each row, and zeroes everywhere else
-var createABoard = function(indicesArray) {
-  // console.log("got to create a board fn: ");
-  var board = [];
-  // save the original length of the array to use in our loops
-  var n = indicesArray.length;
-  // cover the zero and one cases
-  if (n === 0) {
-    return [[0]];
-  } else if (n === 1) {
-    return [[1]];
-  }
-  for (var i = 0; i < n; i++) {
-    // each loop start with an empty row array
-    var rowArray = [];
-    // each loop, shift the first one off from the index array
-    var indexToPlacePiece = indicesArray.shift();
-    // loop n times, pushing a 0 at each position, except a 1 at the popped off index
-    for (var j = 0; j < n; j++) {
-      (j === indexToPlacePiece) ? rowArray.push(1) : rowArray.push(0);
-    };
-    // push the row array we've built into the solution array
-    board.push(rowArray);
-  }
-  // return the solution array
-  // console.log("board inside create fn: ", board);
-  return board;
-}
 
+// created this helper function to allow me to pass in a number, create an array with numbers 0 -> n, and return an array of all the permutations of that array
 window.allArrayPermuations = function(n) {
-  // cover the zero and one cases
+  // cover the zero case
   if (n === 0) {
     return [[0]];
-  } else if (n === 1) {
-    return [[1]];
   }
-
   // create an array of all indices. we will be counting the number of possible permutations of this array.
   var indices = [];
   for (var i = 0; i < n; i++) {
@@ -106,7 +75,6 @@ window.countNRooksSolutions = function(n) {
 };
 
 
-
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
   // cover the zero case
@@ -122,7 +90,9 @@ window.findNQueensSolution = function(n) {
     var indicesBoard = new Board({'indicesArray': allOptions[i], 'n': n});
     // check if there are any queen conflicts
     var goodToGo = !indicesBoard.hasAnyQueensConflicts();
+    // if there are no conflicts
     if (goodToGo) {
+      // return that board or rows
       return indicesBoard.rows();
     }
   }
